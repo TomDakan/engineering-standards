@@ -1,0 +1,27 @@
+# Code Review Checklist v{{ version }}
+
+This checklist is auto-generated from the engineering standards. Use it to verify PRs.
+
+## Core Standards
+
+{% for standard in core.standards %}
+{% if standard.checklist %}
+### {{ standard.title }}
+
+{% for group in standard.checklist %}
+#### {{ group.title }}
+{% for item in group.rules %}
+- [ ] {{ item }}
+{% endfor %}
+{% endfor %}
+{% endif %}
+{% endfor %}
+
+## Language Specifics
+
+{% for lang_name, specific_checklists in language_checklists.items() %}
+### {{ lang_name|title }}
+{% for checklist_content in specific_checklists %}
+{{ checklist_content }}
+{% endfor %}
+{% endfor %}

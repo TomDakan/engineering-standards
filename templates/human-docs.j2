@@ -1,0 +1,84 @@
+# Engineering Standards Documentation v{{ version }}
+
+This document aggregates all engineering standards for easy reading.
+
+---
+
+## Part 1: Core Principles
+
+{% for standard in core.standards %}
+### {{ standard.title }}
+
+{{ standard.description }}
+
+{% if standard.principles %}
+#### {{ standard.title }} Principles
+
+{% for principle in standard.principles %}
+{% if principle.rules %}
+##### {{ principle.title }}
+
+{% for item in principle.rules %}
+* **{{ item.title }}**: {{ item.description }}
+{% endfor -%}
+
+{% else %}
+* **{{ principle.title }}**: {{ principle.description }}
+{% endif -%}
+{% if not loop.last %}
+
+{% endif %}
+{% endfor %}
+
+{% endif %}
+
+{%- if standard.checklist %}
+#### {{ standard.title }} Verification Checklist
+
+{% for group in standard.checklist %}
+* **{{ group.title }}**
+{% for item in group.rules %}
+* {{ item }}
+{% endfor %}
+
+{%- endfor %}
+{% endif %}
+{%- if not loop.last %}
+
+{% endif %}
+{% endfor %}
+
+## Part 2: Language Specific Standards
+
+{% for lang_name, lang_content in languages.items() %}
+### {{ lang_name|title }}
+
+{{ lang_content.index | strip_frontmatter }}
+#### {{ lang_name|title }} Design
+
+{{ lang_content.design | strip_frontmatter }}
+#### {{ lang_name|title }} Formatting
+
+{{ lang_content.formatting | strip_frontmatter }}
+#### {{ lang_name|title }} Naming
+
+{{ lang_content.naming | strip_frontmatter }}
+#### {{ lang_name|title }} Concurrency
+
+{{ lang_content.concurrency | strip_frontmatter }}
+#### {{ lang_name|title }} Security
+
+{{ lang_content.security | strip_frontmatter }}
+#### {{ lang_name|title }} Testing
+
+{{ lang_content.testing | strip_frontmatter }}
+{% endfor %}
+{% if project_context %}
+## Part 3: Project Context
+
+{{ project_context | strip_frontmatter }}
+{%- endif %}
+
+## Part 4: Template Usage
+
+To start a new project, copy `templates/project-context-template.md` to your repository root and fill it in.

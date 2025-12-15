@@ -1,0 +1,304 @@
+standards:
+  - id: architecture
+    title: Architecture & Design
+    description: Core truths about boundaries, layering, and robust design.
+    principles:
+      - title: Boundaries & Layering
+        rules:
+          - title: Separation of Concerns
+            description: Distinct sections of code must address distinct concerns. User Interface logic should not bleed into Business Logic, and Database Access details should be hidden from Core Domain logic.
+          - title: Dependency Rule
+            description: Dependencies should point inwards. High-level policies should not depend on low-level details; low-level details should depend on high-level policies.
+      - title: SOLID Principles
+        rules:
+          - title: Single Responsibility Principle (SRP)
+            description: A class or module should have one, and only one, reason to change.
+          - title: Open/Closed Principle (OCP)
+            description: Entities should be open for extension, but closed for modification.
+          - title: Liskov Substitution Principle (LSP)
+            description: Derived classes must be substitutable for their base classes.
+          - title: Interface Segregation Principle (ISP)
+            description: Many client-specific interfaces are better than one general-purpose interface.
+          - title: Dependency Inversion Principle (DIP)
+            description: Depend upon abstractions, not concretions.
+      - title: DRY (Don't Repeat Yourself)
+        rules:
+          - title: Single Representation
+            description: Every piece of knowledge must have a single, unambiguous, authoritative representation within a system.
+          - title: Duplication
+            description: Duplication leads to inconsistency and maintenance nightmares.
+      - title: Type Safety & Data Modeling
+        rules:
+          - title: Rich Domain Types
+            description: Use specific types (e.g., `CustomerId`) instead of primitives (`int`, `string`) to enforce business rules and prevent swapping arguments.
+          - title: Interface Usage
+            description: Define dependencies by Interfaces (contracts) rather than Concrete Classes.
+          - title: Null Safety
+            description: Handle `null` explicitly. Use `Option` types or strict null-checks to signal absence of value.
+      - title: Object-Oriented Design
+        rules:
+          - title: Composition over Inheritance
+            description: Use inheritance "is-a" sparingly. Prefer composition for sharing behavior to avoid brittle hierarchies.
+          - title: Dependency Injection
+            description: Inject dependencies rather than instantiating them internally. Avoid global state and singletons.
+          - title: Law of Demeter
+            description: Objects should only talk to their immediate friends. Don't reach deeply into other objects' internals.
+          - title: Encapsulation
+            description: Keep mutable state private. Expose behavior (methods), not data (getters/setters).
+      - title: Functional & Event-Driven
+        rules:
+          - title: Immutability
+            description: Value Objects should be immutable. Default to read-only variables unless mutation is strictly required.
+          - title: Side-Effect Isolation
+            description: Separate "Pure Functions" (deterministic, no side effects) from "Impure Functions" (I/O, database writes).
+          - title: Event Architecture
+            description: Ensure event flows are traceable. Use events to decouple domains, not for linear control flow.
+          - title: Traceability
+            description: Messages must include `correlation_id` (process) and `causation_id` (trigger) to allow full debugging of async flows.
+          - title: Pure Core, Imperative Shell
+            description: Isolate business logic (pure) from side effects (shell). Logic should be testable without mocks.
+    checklist:
+      - title: Coupling & Cohesion
+        rules:
+          - Is high cohesion maintained (related things stay together)?
+          - Is loose coupling preserved (dependencies are minimized and explicit)?
+          - Are circular dependencies avoided?
+      - title: DRY (Don't Repeat Yourself)
+        rules:
+          - Is duplicated logic extracted into reusable functions or components?
+          - Are magic numbers/strings replaced with named constants?
+      - title: SOLID Principles (General Application)
+        rules:
+          - Is the Open/Closed principle respected (open for extension, closed for modification)?
+          - Are abstractions leaked? (Does the caller know too much about the implementation?)
+      - title: Type Safety & Data Modeling
+        rules:
+          - Are primitives replaced with rich domain types where appropriate?
+          - Are interfaces used to define contracts for dependencies?
+          - Is null/none handled explicitly (e.g., Option types)?
+      - title: Object-Oriented Best Practices
+        rules:
+          - Is deep inheritance avoided in favor of composition?
+          - Are dependencies injected (no hidden `new` or global access)?
+          - Is strict encapsulation maintained (no leaking internal state)?
+      - title: Functional & Event-Driven
+        rules:
+          - Are Value Objects immutable?
+          - Is business logic isolated from I/O side effects?
+          - Are events used correctly for decoupling, without creating "Event Spaghetti"?
+          - Are event flows traceable (correlation_id)?
+      - title: System Boundaries
+        rules:
+          - Does the code respect architectural boundaries (e.g., Domain ignoring UI)?
+          - Are DTOs used at boundaries to prevent leaking internal models?
+
+  - id: readability
+    title: Readability & Clarity
+    description: Writing code that can be understood by humans, not just machines.
+    principles:
+      - title: Code for Humans
+        description: Write code as if the next person to read it is an exhausted maintainer at 3 AM.
+      - title: Descriptive Naming
+        description: Variable and function names should be descriptive and unambiguous. `customer_id` is better than `cid`.
+      - title: Small Functions
+        description: Functions should do one thing and do it well. If a function is too long, it likely does too many things.
+      - title: Comments
+        description: Use comments to explain *why*, not *what*. The code itself should explain *what* it is doing.
+      - title: Verifiable Metrics
+        rules:
+          - title: Function Length
+            description: "Functions should generally be under 30 lines. > 50 lines requires justification."
+          - title: Argument Count
+            description: "Functions should have 3 or fewer arguments. > 4 usually suggests a missing Parameter Object or Concept."
+          - title: Cyclomatic Complexity
+            description: "Keep complexity low (under 10). Simplify conditional logic."
+          - title: File Size
+            description: "Files should logically fit in one head context. Soft limit of 300 lines."
+    checklist:
+      - title: Naming Conventions
+        rules:
+          - Do variable, function, and class names clearly reveal their intent?
+          - Are names consistent with the existing codebase style?
+          - Are abbreviations avoided unless they are universally understood?
+      - title: Complexity
+        rules:
+          - Are functions short and focused on a single task (Single Responsibility Principle)?
+          - Is the nesting depth minimized (avoiding "arrow code")?
+          - Can complex conditional logic be simplified or extracted into helper functions?
+      - title: Comments & Documentation
+        rules:
+          - Do comments explain the "why" rather than the "what" (the code shows the "what")?
+          - Are outdated comments removed?
+          - Is public API documentation present and accurate?
+
+  - id: reliability
+    title: Reliability & Error Handling
+    description: Ensuring the system behaves correctly under all conditions, especially failure.
+    principles:
+      - title: Error Strategy & Flow
+        rules:
+          - title: Exceptions vs Result Types
+            description: Use Result types for expected failures (e.g., `InsufficientFunds`). Reserve exceptions for truly unexpected system states (e.g., `OutOfMemory`).
+          - title: Input Validation
+            description: Validate input at the boundaries of the system. Trust no one.
+          - title: Scope
+            description: Keep `try/catch` blocks as narrow as possible.
+      - title: Resilience Patterns
+        rules:
+          - title: Timeouts & Deadlines
+            description: All external calls (HTTP, DB, RPC) must have explicit timeouts.
+          - title: Retries with Backoff
+            description: Use exponential backoff and jitter for retries. Enforce hard limits on attempts.
+          - title: Circuit Breakers
+            description: Fail fast if a dependent service is down to prevent cascading failures.
+          - title: Idempotency
+            description: Operations should be safe to retry (e.g., checking transaction state before re-charging).
+      - title: Resource Management (RAII)
+        rules:
+          - title: Automatic Cleanup
+            description: Use language constructs (`with`, `defer`, `try-with-resources`) to guarantee resource cleanup.
+          - title: Failure State Cleanup
+            description: Roll back partial changes if a multi-step operation fails (compensating transactions).
+      - title: Data Integrity & Concurrency
+        rules:
+          - title: Atomicity
+            description: Errors must leave the system in a valid state. No partial data corruption.
+          - title: Thread Safety
+            description: Synchronize shared mutable state. Use thread-safe collections where appropriate.
+      - title: Observability & Debuggability
+        rules:
+          - title: Structured Logging
+            description: Use structured formats (e.g., JSON) for logs. Include `correlation_id`, `user_id`, and other context as keys, not just formatted strings.
+          - title: Exception Wrapping
+            description: Preserve original causes (Inner Exception) when re-throwing. Wrap generic errors in domain-specific exceptions.
+    checklist:
+      - title: Error Strategy
+        rules:
+          - Are expected failures handled as return values (Result types) instead of exceptions?
+          - Are exceptions reserved for truly unexpected scenarios?
+          - Are errors caught at the appropriate level?
+          - Are exceptions specific rather than generic (e.g., `ValueError` vs `Exception`)?
+          - Are swallowed exceptions avoided (no empty catch blocks)?
+      - title: Resilience
+        rules:
+          - Do all external calls have timeouts?
+          - Are retries bounded and exponential (not infinite/immediate)?
+          - Is circuit breaking involved for unstable dependencies?
+      - title: Resource Management
+        rules:
+          - Are resources (sockets, files, DB connections) properly closed or disposed of, even in error states?
+          - Is there a rollback mechanism for failed multi-step operations?
+      - title: Data Integrity
+        rules:
+          - Are operations atomic? (State is valid even after failure).
+          - Is shared state thread-safe?
+          - Are race conditions or deadlocks considered?
+      - title: Observability
+        rules:
+          - Do logs contain searchable context (IDs) and correct log levels?
+          - Are exceptions wrapped to preserve cause but decoupled from implementation details?
+
+  - id: security
+    title: Security
+    description: Protecting the system and data from malicious intent and accidental exposure.
+    principles:
+      - title: Least Privilege
+        description: Components should operate with the minimum permissions necessary to function.
+      - title: Sanitization
+        description: All external input must be sanitized to prevent injection attacks.
+      - title: No Secrets in Code
+        description: Never hardcode credentials or secrets. Use environment variables or secure vaults.
+      - title: Safe Deserialization
+        description: Avoid serialization formats that allow arbitrary code execution (e.g., those that deserialize functions or objects). Prefer data-only formats like JSON.
+    checklist:
+      - title: Input Validation
+        rules:
+          - Is all external input validated and sanitized before use?
+      - title: Deserialization
+        rules:
+          - Are unsafe serialization libraries avoided?
+          - Is the deserialization process restricted to data types only?
+      - title: Data Exposure
+        rules:
+          - Is sensitive data (passwords, tokens, PII) kept out of logs and source control?
+
+  - id: performance
+    title: Performance & Efficiency
+    description: Implementing systems that use resources responsibly and scale effectively.
+    principles:
+      - title: Database Efficiency
+        rules:
+          - title: Avoid N+1 Queries
+            description: Do not execute queries inside loops. Use eager loading (`JOIN`, `prefetch_related`) to fetch data in batches.
+          - title: Selective Fetching
+            description: Avoid `SELECT *`. Fetch only the columns you need to reduce network and memory overhead.
+          - title: Indexing
+            description: Ensure foreign keys and frequently queried columns are indexed.
+      - title: Memory & Resource Management
+        rules:
+          - title: Streaming
+            description: Process large datasets (files, DB result sets) via streams or iterators, not by loading everything into RAM.
+          - title: Resource Leaks
+            description: Explicitly close resources. Prefer idioms that do this automatically (e.g., `try-with-resources`, `using`, `with`).
+      - title: Algorithmic Efficiency
+        rules:
+          - title: Nested Loops
+            description: Be wary of nested loops over potentially large datasets ($O(n^2)$). Convert to lookups (Hash Maps) where possible ($O(n)$).
+    checklist:
+      - title: Database
+        rules:
+          - Are N+1 queries avoided (no queries inside loops)?
+          - Is `SELECT *` avoided in favor of specific columns?
+          - Are indexes present for query predicates?
+      - title: Memory & Resources
+        rules:
+          - Are large datasets processed stream-wise?
+          - Are resources properly released?
+      - title: Algorithms
+        rules:
+          - Are $O(n^2)$ partial matches replaced with efficient lookups?
+
+  - id: api_design
+    title: API Design
+    description: Creating consistent, predictable, and usable interfaces.
+    principles:
+      - title: HTTP Semantics
+        rules:
+          - title: Status Codes
+            description: Use standard HTTP status codes. `200` OK, `201` Created, `400` Bad Request, `401` Unauthorized, `403` Forbidden, `404` Not Found, `500` Internal Server Error.
+          - title: Verbs
+            description: Use standard HTTP verbs (`GET`, `POST`, `PUT`, `DELETE`, `PATCH`) correctly. `GET` must be safe and idempotent.
+      - title: Data Formats
+        rules:
+          - title: ISO 8601
+            description: Use ISO 8601 strings (`YYYY-MM-DDTHH:MM:SSZ`) for all dates and times.
+          - title: JSON First
+            description: JSON is the default format for request and response bodies.
+          - title: Consistent Errors
+            description: 'Error responses must follow a standard structure (e.g., `{ "error": "code", "message": "human readable" }`).'
+          - title: Versioning
+            description: "APIs must be versioned (e.g., `/v1/resource` or `Accept: application/vnd.api.v1+json`). Never break existing clients."
+    checklist:
+      - title: HTTP Compliance
+        rules:
+          - Are standard status codes used (not always returning 200)?
+          - Are safe methods (GET) effectively read-only?
+          - Is the API versioned?
+      - title: Data & Errors
+        rules:
+          - Are dates formatted as ISO 8601?
+          - Do error responses follow the defined schema?
+
+  - id: testing
+    title: Testing & Quality Assurance
+    description: Ensuring quality through rigorous automated verification.
+    principles: [] # Implicit principle: Test everything
+    checklist:
+      - title: Test Coverage
+        rules:
+          - Does the new code have accompanying unit tests?
+          - Do tests cover edge cases and failure modes, not just the "happy path"?
+      - title: Test Quality
+        rules:
+          - Are the tests readable and maintainable?
+          - Are assertions specific and meaningful?
