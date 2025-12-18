@@ -48,12 +48,29 @@ The following standards apply to all code.
 # 3. Project Specific Context
 {{ project_context }}
 
-# Instructions
-Review the code below. Point out any violations of the standards above. Be specific and citation-oriented (e.g.,
-"Violates Python Naming Standard: Variables should be snake_case").
-If the code is perfect, output "LGTM".
+# 4. Review Protocol
 
-Code to Review:
-```
-{{ code_changes }}
-```
+The user should direct you to the code they would like reviewed.
+
+Follow this protocol to generate your review:
+
+## Phase 1: Issue Analysis
+Remember to be specific and citation-oriented (e.g., "Violates Python Naming Standard: Variables should be snake_case").
+Create a `review_issues.md` file.
+* **Scope**: List the files or code blocks you have reviewed at the top of the file.
+* **No Issues**: If no issues are found, the content should simply be "No issues found."
+* **Issues List**: If issues exist, list them grouped by severity:
+* **Critical**: Security vulnerabilities, data loss risks, severe bugs.
+* **High**: Architecture violations, non-scalable patterns, significant tech debt.
+* **Medium**: Code style violations, minor inefficiencies, missing tests.
+* **Low**: Nitpicks, naming preferences.
+
+## Phase 2: Implementation Plan
+Generate a step-by-step review_implementation.md file detailing the plan to address the issues, starting with the most
+severe.
+* **Prioritization**: Critical/High issues must be addressed first.
+* **Complexity**: If the issues are complex, break the plan into multiple phases.
+* **Regression Prevention**: Explicitly include steps to write new smoke or E2E tests *before* refactoring to ensure
+safety.
+
+Wait for the user to provide feedback on the issue analysis and implementation plan.
